@@ -17,7 +17,7 @@ public class PermissionActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate.");
 
         RxPermissions.getInstance(this)
-                .request(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO)
                 .subscribe(granted -> {
                     if (granted) {
                         startActivity(new Intent(this, MainActivity.class));

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.media.audiofx.Visualizer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import com.xuie.musicservice.media.IMediaPlaybackService;
 import com.xuie.musicservice.media.Media;
 import com.xuie.musicservice.media.MediaPlaybackService;
+import com.xuie.musicservice.widget.VisualizerView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,6 +32,7 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
+    @BindView(R.id.visualizer_view) VisualizerView visualizerView;
 
     private BroadcastReceiver mStatusListener = new BroadcastReceiver() {
         @Override public void onReceive(Context context, Intent intent) {
@@ -74,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
     private IMediaPlaybackService mService;
     private boolean isBind;
+    private Visualizer mVisualizer;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -203,11 +207,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setPauseButtonImage() {
+        if (mService == null)
+            return;
+
         try {
-            if (mService != null && mService.isPlaying()) {
-                playPause.setImageResource(android.R.drawable.ic_media_pause);
-            } else {
-                playPause.setImageResource(android.R.drawable.ic_media_play);
+            playPause.setImageResource(mService.isPlaying() ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play);
+
+            if (mVisualizer != null) {
+                mVisualizer.setEnabled(mService.isPlaying());
             }
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -224,6 +231,16 @@ public class MainActivity extends AppCompatActivity {
             if (media != null) {
                 title.setText(media.getTitle());
             }
+
+            Log.d(TAG, "audioSessionId : " + mService.getAudioSessionId());
+            if (mVisualizer != null) {
+                mVisualizer.setEnabled(false);
+            }
+
+            mVisualizer = new Visualizer(mService.getAudioSessionId());
+            mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+            visualizerView.setVisualizer(mVisualizer);
+            mVisualizer.setEnabled(mService.isPlaying());
 
             if (mService.getQueuePosition() != -1) {
                 seekBar.setMax((int) mService.duration());

@@ -214,6 +214,10 @@ public class MediaPlaybackService extends Service implements
         }
     }
 
+    public int getAudioSessionId() {
+        return mMediaPlayer != null ? mMediaPlayer.getAudioSessionId() : 0;
+    }
+
 
     static class ServiceStub extends IMediaPlaybackService.Stub {
         WeakReference<MediaPlaybackService> mService;
@@ -323,7 +327,7 @@ public class MediaPlaybackService extends Service implements
         }
 
         @Override public int getAudioSessionId() throws RemoteException {
-            return 0;
+            return mService.get().getAudioSessionId();
         }
     }
 
