@@ -1,9 +1,13 @@
-后台Media Service构想示例
+后台Media Service
 ---
 
-最近客户一直想调用App的音乐播放器，但因为当初用的结构不适用，后面勉强另写一个服务来支持AIDL进程间控制～～～你懂的，总是会想要越来越多的支持。
+![](screenshots/musice_service_aidl.png)
 
-这下干脆自身APP也用AIDL，本分享是一个参考系统Music的Demo样例
+后台音乐播放其实就是要做到后台播放，这里我们最不希望的就是有有关UI相关的控制了，干脆用DIAL是个不错选择
+
+你启动我就好，有变更消息我都广播给你，其他你自己主动来拿
+
+> 项目参考系统Music.apk
 
 License
 ---
